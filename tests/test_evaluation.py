@@ -158,7 +158,7 @@ def test_adjoint_experiment_shape_and_counts():
         assert r["nf_adj"] == 1 and r["nf_fd"] == 2 * r["n"] and r["err_fd"] < 1e-8 and r["err_jac"] < 1e-12
     assert res == ev.adjoint_experiment()
     kind, text = ev.verdict_adjoint(res)
-    assert kind == "success" and "192 Vorwärtsläufe" in text and "9 Fällen" in text
+    assert kind == "success" and "192 Vorwärtsläufe" in text and "9 Fällen" in text and "weniger als 1,0·10⁻⁹" in text
 
 
 def test_laplace_experiment_shape_and_reproducibility():
@@ -175,10 +175,10 @@ def test_verdicts_of_the_slow_experiments_on_hand_built_results():
     kind, text = ev.verdict_ignore(ignore)
     assert kind == "warning" and "7,5 % / 8,0 % / 9,0 %" in text and "25,0 % / 30,0 % / 40,0 %" in text and "(11,0 % und 60,0 %)" in text and "einen Fehler von 15,3 % (RMS)" in text and "15,2 %" in text
     rows = [{"rho": 1.0, "solver": s, "iterations": i} for s, i in (("gd", 500), ("gn_pur", 6), ("gn", 6), ("lm", 12))]
-    basin = [{"rho": 2.0, "amp": amp, "starts": 20, "lm": lm, "gn": 0, "gn_pur": gp} for amp, lm, gp in ((0.5, 20, 1), (1.5, 3, 0))]
+    basin = [{"rho": 2.0, "amp": amp, "starts": 20, "lm": lm, "gn": 0, "gn_pur": gp} for amp, lm, gp in ((0.5, 20, 1), (1.0, 9, 4), (1.5, 3, 0))]
     kind, text = ev.verdict_solvers({"rows": rows, "basin": basin})
     assert kind == "warning" and "500 Iterationen (nicht konvergiert)" in text and "Schrittweitensuche 6" in text and "Levenberg-Marquardt 12" in text
-    assert "20 von 20 Starts der Amplitude 0,5, von 3 von 20 der Amplitude 1,5" in text and "von 1 und 0" in text
+    assert "20 von 20 Starts der Amplitude 0,5, von 3 von 20 der Amplitude 1,5" in text and "bei Amplitude 1 von 4 von 20" in text
 
 
 def test_gradient_check_point_is_080_truth_plus_005():

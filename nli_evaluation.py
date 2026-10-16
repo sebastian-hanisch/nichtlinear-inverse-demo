@@ -337,7 +337,8 @@ def verdict_adjoint(res: dict) -> tuple[str, str]:
     rows = res["rows"]
     worst = max(max(r["err_fd"], r["err_jac"]) for r in rows)
     big = max(rows, key=lambda r: r["n"])
-    return "success", (f"Der adjungierte Gradient stimmt in allen {len(rows)} Fällen mit dem Differenzenquotienten und mit J^T r auf {sci(worst)} überein. "
+    bound = 10.0 ** math.ceil(math.log10(worst))
+    return "success", (f"Der adjungierte Gradient stimmt in allen {len(rows)} Fällen mit dem Differenzenquotienten und mit J^T r auf weniger als {sci(bound)} überein. "
                        f"Er braucht {big['nf_adj']} Vorwärtslauf und einen Rückwärtslauf; der Differenzenquotient braucht bei n = {big['n']} {count_text(big['nf_fd'])} Vorwärtsläufe.")
 
 
@@ -353,11 +354,11 @@ def verdict_ignore(res: dict) -> tuple[str, str]:
 def verdict_solvers(res: dict) -> tuple[str, str]:
     rows = {(r["rho"], r["solver"]): r for r in res["rows"]}
     basin = {(r["rho"], r["amp"]): r for r in res["basin"]}
-    lo, hi = basin[(2.0, 0.5)], basin[(2.0, 1.5)]
+    lo, hi, one = basin[(2.0, 0.5)], basin[(2.0, 1.5)], basin[(2.0, 1.0)]
     it = lambda rho, s: rows[(rho, s)]["iterations"]  # noqa: E731
     return "warning", (f"Bei ρ = {rho_label(1.0)} vom Nullstart: Gradientenabstieg {it(1.0, 'gd')} Iterationen (nicht konvergiert), Gauss-Newton mit Schrittweitensuche {it(1.0, 'gn')}, "
                        f"Levenberg-Marquardt {it(1.0, 'lm')}. Einzugsgebiet bei ρ = {rho_label(2.0)}: Levenberg-Marquardt erreicht dasselbe Minimum von {lo['lm']} von {lo['starts']} Starts der "
-                       f"Amplitude 0,5, von {hi['lm']} von {hi['starts']} der Amplitude 1,5; Gauss-Newton ohne Schrittweitensuche von {lo['gn_pur']} und {hi['gn_pur']}.")
+                       f"Amplitude 0,5, von {hi['lm']} von {hi['starts']} der Amplitude 1,5; Gauss-Newton ohne Schrittweitensuche schon bei Amplitude 1 von {one['gn_pur']} von {one['starts']}.")
 
 
 def verdict_laplace(res: dict) -> tuple[str, str]:

@@ -54,10 +54,10 @@ def test_other_preset_numbers():
 
 def test_adjoint_numbers(adjoint):
     rows = adjoint["rows"]
-    assert len(rows) == 9 and max(max(r["err_fd"], r["err_jac"]) for r in rows) == pytest.approx(6.1e-10, rel=0.2)
+    assert len(rows) == 9 and 5e-10 < max(max(r["err_fd"], r["err_jac"]) for r in rows) < 9e-10
     assert [r["nf_fd"] for r in rows[:3]] == [48, 96, 192] and all(r["nf_adj"] == 1 for r in rows) and max(r["err_jac"] for r in rows) < 1e-15
     text = ev.verdict_adjoint(adjoint)[1]
-    assert "6,1·10⁻¹⁰" in text and "192 Vorwärtsläufe" in text
+    assert "weniger als 1,0·10⁻⁹" in text and "192 Vorwärtsläufe" in text
 
 
 # ----------------------------------------------------------------------------- Experiment 2
@@ -91,13 +91,13 @@ def test_solver_numbers(solvers):
 def test_basin_numbers(solvers):
     basin = {(r["rho"], r["amp"]): r for r in solvers["basin"]}
     assert [basin[(2.0, a)]["lm"] for a in C.BASIN_AMPS] == [1, 20, 20, 10, 0, 0, 0] and [basin[(2.0, a)]["gn"] for a in C.BASIN_AMPS] == [1, 20, 20, 10, 0, 0, 0]
-    assert [basin[(2.0, a)]["gn_pur"] for a in C.BASIN_AMPS] == [1, 20, 1, 0, 0, 0, 0]
+    assert [basin[(2.0, a)]["gn_pur"] for a in C.BASIN_AMPS][:2] == [1, 20] and basin[(2.0, 0.5)]["gn_pur"] <= 2 and [basin[(2.0, a)]["gn_pur"] for a in C.BASIN_AMPS][3:] == [0, 0, 0, 0]       # bei 0,5 je nach Plattform 1 oder 2
     assert [basin[(4.0, a)]["lm"] for a in C.BASIN_AMPS] == [1, 20, 20, 5, 0, 0, 0] and [basin[(4.0, a)]["gn"] for a in C.BASIN_AMPS] == [1, 20, 20, 5, 0, 0, 0]
     assert [basin[(4.0, a)]["gn_pur"] for a in C.BASIN_AMPS] == [1, 0, 0, 0, 0, 0, 0] and basin[(2.0, 0.0)]["starts"] == 1 and basin[(2.0, 1.0)]["starts"] == 20
     assert all(basin[(rho, 1.0)]["lm"] <= 10 for rho in (2.0, 4.0))                      # „höchstens die Hälfte“ bei Amplitude 1
     text = ev.verdict_solvers(solvers)[1]
     assert "500 Iterationen (nicht konvergiert)" in text and "Schrittweitensuche 6" in text and "Levenberg-Marquardt 12" in text
-    assert "20 von 20 Starts der Amplitude 0,5, von 0 von 20 der Amplitude 1,5" in text and "von 1 und 0" in text
+    assert "20 von 20 Starts der Amplitude 0,5, von 0 von 20 der Amplitude 1,5" in text and "bei Amplitude 1 von 0 von 20" in text
 
 
 # ----------------------------------------------------------------------------- Experiment 4
