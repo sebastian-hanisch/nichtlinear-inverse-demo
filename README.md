@@ -1,5 +1,7 @@
 # Nichtlineare inverse Probleme: Wann trägt die Linearisierung? – Streamlit-Demo
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-nichtlinear-inverse-demo.streamlit.app/)**
+
 Neuntes Stück der Linie **Inverse Probleme und Regularisierung** in der „Konzepte“-Reihe im Portfolio von [Sebastian Hanisch](https://sebastianhanisch.net) (Operations Research und Machine Learning). Es baut auf [posterior-sampling-demo](https://github.com/sebastian-hanisch/posterior-sampling-demo), [iterativ-demo](https://github.com/sebastian-hanisch/iterativ-demo), [tikhonov-demo](https://github.com/sebastian-hanisch/tikhonov-demo) und [schlecht-gestellt-demo](https://github.com/sebastian-hanisch/schlecht-gestellt-demo) auf und nutzt dieselbe Welt: ein Phantom aus zwei Hügeln und einem Kasten, eine Wärmeleitung (Gauß-Unschärfe) und weißes Rauschen. Neu ist, dass die Vorwärtsabbildung **nichtlinear** wird. Die Wahrheit ist bekannt, weil das Phantom selbst die Wahrheit ist; sie dient hier nur als Maßstab.
 
 ## Kernfrage
